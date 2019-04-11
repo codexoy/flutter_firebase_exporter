@@ -5,11 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	"firebase.google.com/go"
-
-	"google.golang.org/api/option"
-
 	"cloud.google.com/go/firestore"
+	"firebase.google.com/go"
+	"google.golang.org/api/option"
 )
 
 // NewFireStoreClient creates a new firestore from secret key

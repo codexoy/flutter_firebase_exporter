@@ -4,9 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/minhajuddinkhan/flutter_pk_firebase_export/fbase"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetUser(t *testing.T) {
