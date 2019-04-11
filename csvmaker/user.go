@@ -21,16 +21,23 @@ func New(w io.Writer) CSVMaker {
 }
 
 // User creates user csv
-func (m *csvmaker) User(users []models.User) error {
-	records := [][]string{}
 
+func getVal(user models.User) ([]string, []string, error) {
 	keys := []string{}
 	values := []string{}
+	return keys, values, GetFields(user, &keys, &values)
+}
+
+func (m *csvmaker) User(users []models.User) error {
+	records := [][]string{}
+	var keys []string
 	for _, user := range users {
-		if err := GetFields(user, &keys, &values); err != nil {
+		k, values, err := getVal(user)
+		keys = k
+		if err != nil {
 			return err
 		}
-		records = append(records, values)
+		records = append(records, values[:])
 	}
 	records = append([][]string{keys}, records...)
 	return m.Writer.WriteAll(records)

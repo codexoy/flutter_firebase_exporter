@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -89,4 +90,52 @@ func TestGetFields(t *testing.T) {
 	values := []string{}
 	err := GetFields(user, &keys, &values)
 	assert.Nil(t, err)
+}
+
+func TestGetFieldsWithIntStructs(t *testing.T) {
+
+	keys := []string{}
+	values := []string{}
+	x := struct {
+		Int   int
+		Int8  int8
+		Int16 int16
+		Int32 int32
+		Int64 int64
+	}{
+		Int:   1,
+		Int8:  2,
+		Int16: 3,
+		Int32: 4,
+		Int64: 5,
+	}
+	err := GetFields(x, &keys, &values)
+	assert.Nil(t, err)
+	v := reflect.ValueOf(x)
+	for i := 0; i < v.NumField(); i++ {
+		assert.Equal(t, fmt.Sprintf("%d", v.Field(i).Interface()), values[i])
+	}
+}
+
+func TestGetFieldsWithSlices(t *testing.T) {
+	x := struct {
+		Slice []string
+	}{
+		Slice: []string{"1", "2", "3"},
+	}
+	keys := []string{}
+	values := []string{}
+	err := GetFields(x, &keys, &values)
+	assert.Nil(t, err)
+	v := reflect.ValueOf(x)
+	for i := 0; i < v.NumField(); i++ {
+		for j := 0; j < (v.Field(i).Len()); j++ {
+			assert.Equal(t, v.Field(i).Index(j).Interface().(string), x.Slice[j])
+		}
+	}
+
+	tp := reflect.TypeOf(x)
+	for i := 0; i < tp.NumField(); i++ {
+		assert.Equal(t, keys[i], fmt.Sprintf("%s[%d]", tp.Field(i).Name, i))
+	}
 }
